@@ -1,0 +1,39 @@
+# TicketGo Terraform Infrastructure
+# Archivos sensibles y generados por Terraform — NUNCA commitear
+*.tfvars.local
+*.tfvars.secrets
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfplan
+tfplan
+plan_output.txt
+
+# Lambda placeholder ZIP generado localmente
+infra/modules/06-async/placeholder.zip
+infra/modules/06-async/index.js
+
+# Credenciales AWS (nunca deben estar en el repo)
+.aws/
+*.pem
+*.key
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+npm-debug.log*
+
+# .NET
+**/bin/
+**/obj/
+*.user
+*.suo
+
+# IDE
+.vscode/
+.idea/
+*.swp

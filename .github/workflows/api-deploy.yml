@@ -1,0 +1,78 @@
+###############################################################################
+# .github/workflows/api-deploy.yml
+# CI/CD: Build Docker (ASP.NET Core) → Push a ECR → Force ECS Deployment
+#
+# Secrets requeridos:
+#   AWS_ROLE_ARN     — ARN del IAM Role para OIDC
+###############################################################################
+
+name: "API Deploy (Docker → ECR → ECS)"
+
+on:
+  push:
+    branches: [main]
+    paths: ["apps/api-backend/**"]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: "us-east-1"
+  ECR_REPOSITORY: "ticketgo-prod-api"     # Nombre del repo ECR (output del módulo 05)
+  ECS_CLUSTER: "ticketgo-prod-cluster"    # Nombre del cluster (output del módulo 05)
+  ECS_SERVICE: "ticketgo-prod-api-service" # Nombre del servicio ECS
+
+jobs:
+  build-and-deploy:
+    name: "Build Docker, Push ECR, Deploy ECS"
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, Tag, and Push Docker Image
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build con cache para reducir tiempo de build
+          docker build \
+            --cache-from $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            apps/api-backend/
+
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Force ECS Service Redeployment
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_SERVICE }} \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Wait for ECS Deployment Stability
+        run: |
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services ${{ env.ECS_SERVICE }} \
+            --region ${{ env.AWS_REGION }}
