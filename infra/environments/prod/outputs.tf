@@ -41,12 +41,6 @@ output "db_endpoint" {
   sensitive   = true
 }
 
-output "db_read_replica_endpoint" {
-  description = "Endpoint de solo lectura del RDS (para queries de catálogo)"
-  value       = module.database.db_read_replica_endpoint
-  sensitive   = true
-}
-
 # ── Cache ─────────────────────────────────────────────────────────────────────
 output "redis_primary_endpoint" {
   description = "Endpoint primario de Redis"

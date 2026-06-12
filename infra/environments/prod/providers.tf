@@ -22,7 +22,7 @@ terraform {
   backend "s3" {
     bucket         = "ticketgo-tfstate-prod"           # Cambiar por nombre real del bucket
     key            = "prod/terraform.tfstate"
-    region         = "us-east-1"
+    region         = "us-east-2"
     encrypt        = true                              # AES-256 en reposo
     dynamodb_table = "ticketgo-tfstate-lock"           # Tabla para state locking
   }

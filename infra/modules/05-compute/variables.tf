@@ -26,7 +26,6 @@ variable "ecs_task_execution_role_arn" { type = string }
 variable "ecs_task_role_arn"           { type = string }
 
 variable "db_secret_arn"            { type = string }
-variable "db_read_replica_endpoint" { type = string }
 variable "redis_primary_endpoint"   { type = string }
 
 variable "acm_certificate_arn" { type = string }

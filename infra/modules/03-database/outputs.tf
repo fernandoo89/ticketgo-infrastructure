@@ -17,11 +17,6 @@ output "db_port" {
   value       = aws_db_instance.primary.port
 }
 
-output "db_read_replica_endpoint" {
-  description = "Endpoint de la Read Replica (solo lectura)"
-  value       = aws_db_instance.read_replica.endpoint
-}
-
 output "db_name" {
   description = "Nombre de la base de datos"
   value       = aws_db_instance.primary.db_name

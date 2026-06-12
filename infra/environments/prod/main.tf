@@ -154,7 +154,6 @@ module "compute" {
 
   # Credenciales inyectadas desde Secrets Manager (no hardcodeadas)
   db_secret_arn            = module.security.db_secret_arn
-  db_read_replica_endpoint = module.database.db_read_replica_endpoint
   redis_primary_endpoint   = module.cache.redis_primary_endpoint
 
   acm_certificate_arn = var.acm_certificate_arn
@@ -214,8 +213,6 @@ resource "aws_secretsmanager_secret_version" "db_credentials_final" {
     host     = split(":", module.database.db_endpoint)[0]  # Extrae solo el host
     port     = 5432
     dbname   = var.db_name
-    # Endpoint de solo lectura para queries de catálogo
-    read_host = split(":", module.database.db_read_replica_endpoint)[0]
   })
 
   depends_on = [module.database]

@@ -117,8 +117,7 @@ resource "aws_ecs_task_definition" "api" {
     environment = [
       { name = "ASPNETCORE_ENVIRONMENT", value = "Production" },
       { name = "ASPNETCORE_URLS",        value = "http://+:${var.container_port}" },
-      { name = "REDIS_ENDPOINT",         value = var.redis_primary_endpoint },
-      { name = "DB_READ_ENDPOINT",       value = var.db_read_replica_endpoint }
+      { name = "REDIS_ENDPOINT",         value = var.redis_primary_endpoint }
     ]
 
     # Variables sensibles inyectadas desde Secrets Manager (nunca en logs)

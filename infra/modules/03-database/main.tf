@@ -110,39 +110,7 @@ resource "aws_db_instance" "primary" {
   tags = { Name = "${var.project_name}-${var.environment}-postgres-primary" }
 }
 
-# ── Read Replica (Lectura de catálogo, búsquedas, reports) ───────────────────
-# Decisión: La réplica descarga las queries de SELECT del primario, que queda
-# libre para procesar escrituras (compras de tickets) de alta concurrencia.
-resource "aws_db_instance" "read_replica" {
-  identifier = "${var.project_name}-${var.environment}-postgres-replica"
 
-  # Replica del primario
-  replicate_source_db = aws_db_instance.primary.identifier
-
-  instance_class = var.db_instance_class
-  storage_type   = "gp3"
-
-  # Red y seguridad
-  vpc_security_group_ids = [var.sg_rds_id]
-  publicly_accessible    = false
-
-  # La réplica NO tiene Multi-AZ propio (el primario ya lo tiene)
-  multi_az = false
-
-  # Backups deshabilitados en réplica (el primario los gestiona)
-  backup_retention_period = 0
-
-  # Performance Insights también en la réplica
-  performance_insights_enabled          = true
-  performance_insights_retention_period = 7
-
-  monitoring_interval = 60
-  monitoring_role_arn = var.rds_monitoring_role_arn
-
-  auto_minor_version_upgrade = true
-
-  tags = { Name = "${var.project_name}-${var.environment}-postgres-replica" }
-}
 
 ###############################################################################
 # AWS Backup — PITR extendido y retención a largo plazo

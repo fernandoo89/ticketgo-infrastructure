@@ -4,13 +4,13 @@
 #     AWS Secrets Manager con `-var` en el pipeline.
 ###############################################################################
 
-aws_region   = "us-east-1"
+aws_region   = "us-east-2"
 environment  = "prod"
 project_name = "ticketgo"
 
 # Networking
 vpc_cidr                  = "10.0.0.0/16"
-availability_zones        = ["us-east-1a", "us-east-1b"]
+availability_zones        = ["us-east-2a", "us-east-2b"]
 public_subnet_cidrs       = ["10.0.1.0/24", "10.0.2.0/24"]
 private_app_subnet_cidrs  = ["10.0.11.0/24", "10.0.12.0/24"]
 private_data_subnet_cidrs = ["10.0.21.0/24", "10.0.22.0/24"]
@@ -32,7 +32,7 @@ container_memory   = 2048
 ecs_desired_count  = 3
 ecs_min_capacity   = 2
 ecs_max_capacity   = 20
-container_image    = "PLACEHOLDER_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/ticketgo-api:latest"
+container_image    = "PLACEHOLDER_ACCOUNT.dkr.ecr.us-east-2.amazonaws.com/ticketgo-api:latest"
 
 # Frontend
 domain_name         = "ticketgo.pe"
