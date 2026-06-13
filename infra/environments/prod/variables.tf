@@ -6,7 +6,7 @@
 variable "aws_region" {
   description = "Región AWS principal de despliegue"
   type        = string
-  default     = "us-east-1"
+  default     = "us-east-2"
 }
 
 variable "environment" {
@@ -31,7 +31,7 @@ variable "vpc_cidr" {
 variable "availability_zones" {
   description = "Lista de AZs a usar para alta disponibilidad (Multi-AZ)"
   type        = list(string)
-  default     = ["us-east-1a", "us-east-1b"]
+  default     = ["us-east-2a", "us-east-2b"]
 }
 
 variable "public_subnet_cidrs" {

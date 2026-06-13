@@ -18,7 +18,7 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: "us-east-1"
+  AWS_REGION: "us-east-2"
   ECR_REPOSITORY: "ticketgo-prod-api"     # Nombre del repo ECR (output del módulo 05)
   ECS_CLUSTER: "ticketgo-prod-cluster"    # Nombre del cluster (output del módulo 05)
   ECS_SERVICE: "ticketgo-prod-api-service" # Nombre del servicio ECS
