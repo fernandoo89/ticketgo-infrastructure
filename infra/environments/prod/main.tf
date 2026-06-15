@@ -178,6 +178,7 @@ module "async" {
 
   db_secret_arn          = module.security.db_secret_arn
   sqs_visibility_timeout = var.sqs_visibility_timeout
+  sender_email           = var.sender_email
 
   depends_on = [module.security]
 }

@@ -157,3 +157,10 @@ variable "sqs_visibility_timeout" {
   type        = number
   default     = 300
 }
+
+variable "sender_email" {
+  description = "Correo electrónico emisor verificado en AWS SES"
+  type        = string
+  default     = "notificaciones@ticketgo.pe"
+}
+

@@ -127,7 +127,9 @@ resource "aws_wafv2_web_acl" "cloudfront" {
     name     = "AWSManagedRulesCommonRuleSet"
     priority = 10
 
-    override_action { none {} }
+    override_action {
+      none {}
+    }
 
     statement {
       managed_rule_group_statement {
@@ -148,7 +150,9 @@ resource "aws_wafv2_web_acl" "cloudfront" {
     name     = "AWSManagedRulesKnownBadInputsRuleSet"
     priority = 20
 
-    override_action { none {} }
+    override_action {
+      none {}
+    }
 
     statement {
       managed_rule_group_statement {
@@ -170,7 +174,9 @@ resource "aws_wafv2_web_acl" "cloudfront" {
     name     = "AWSManagedRulesBotControlRuleSet"
     priority = 30
 
-    override_action { none {} }
+    override_action {
+      none {}
+    }
 
     statement {
       managed_rule_group_statement {
@@ -374,4 +380,36 @@ resource "aws_s3_bucket_policy" "frontend" {
       }
     ]
   })
+}
+
+# ── AWS Route 53 — Registros DNS para CloudFront ──────────────────────────────
+data "aws_route53_zone" "primary" {
+  count = var.domain_name != "" ? 1 : 0
+  name  = var.domain_name
+}
+
+resource "aws_route53_record" "apex" {
+  count   = var.domain_name != "" ? 1 : 0
+  zone_id = data.aws_route53_zone.primary[0].zone_id
+  name    = var.domain_name
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.frontend.domain_name
+    zone_id                = aws_cloudfront_distribution.frontend.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "www" {
+  count   = var.domain_name != "" ? 1 : 0
+  zone_id = data.aws_route53_zone.primary[0].zone_id
+  name    = "www.${var.domain_name}"
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.frontend.domain_name
+    zone_id                = aws_cloudfront_distribution.frontend.hosted_zone_id
+    evaluate_target_health = false
+  }
 }

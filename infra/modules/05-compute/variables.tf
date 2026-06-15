@@ -14,13 +14,32 @@ variable "sg_alb_id"  { type = string }
 variable "sg_ecs_id"  { type = string }
 
 variable "container_image"  { type = string }
-variable "container_port"   { type = number; default = 8080 }
-variable "container_cpu"    { type = number; default = 1024 }
-variable "container_memory" { type = number; default = 2048 }
+variable "container_port"   {
+  type    = number
+  default = 8080
+}
+variable "container_cpu"    {
+  type    = number
+  default = 1024
+}
+variable "container_memory" {
+  type    = number
+  default = 2048
+}
 
-variable "ecs_desired_count"  { type = number; default = 3  }
-variable "ecs_min_capacity"   { type = number; default = 2  }
-variable "ecs_max_capacity"   { type = number; default = 20 }
+
+variable "ecs_desired_count"  {
+  type    = number
+  default = 3
+}
+variable "ecs_min_capacity"   {
+  type    = number
+  default = 2
+}
+variable "ecs_max_capacity"   {
+  type    = number
+  default = 20
+}
 
 variable "ecs_task_execution_role_arn" { type = string }
 variable "ecs_task_role_arn"           { type = string }

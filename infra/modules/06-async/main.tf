@@ -111,6 +111,7 @@ resource "aws_lambda_function" "ticket_worker" {
       ENVIRONMENT    = var.environment
       SQS_QUEUE_URL  = aws_sqs_queue.tickets.url
       DB_SECRET_ARN  = var.db_secret_arn
+      SENDER_EMAIL   = var.sender_email
     }
   }
 
@@ -171,3 +172,9 @@ data "archive_file" "lambda_placeholder" {
   source_file = local_file.lambda_placeholder.filename
   output_path = "${path.module}/placeholder.zip"
 }
+
+# ── AWS SES — Identidad de Correo del Remitente ───────────────────────────────
+resource "aws_ses_email_identity" "tickets_sender" {
+  email = var.sender_email
+}
+

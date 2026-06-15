@@ -41,3 +41,5 @@ acm_certificate_arn = "arn:aws:acm:us-east-1:PLACEHOLDER:certificate/PLACEHOLDER
 # Async
 lambda_runtime         = "nodejs20.x"
 sqs_visibility_timeout = 300
+sender_email           = "notificaciones@ticketgo.pe"
+

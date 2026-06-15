@@ -21,3 +21,9 @@ variable "sqs_visibility_timeout" {
   type        = number
   default     = 300
 }
+
+variable "sender_email" {
+  description = "Correo electrónico del remitente verificado en AWS SES"
+  type        = string
+}
+
