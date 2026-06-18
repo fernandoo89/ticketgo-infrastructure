@@ -36,7 +36,7 @@ container_image    = "PLACEHOLDER_ACCOUNT.dkr.ecr.us-east-2.amazonaws.com/ticket
 
 # Frontend
 domain_name         = "ticketgo.pe"
-acm_certificate_arn = "arn:aws:acm:us-east-1:PLACEHOLDER:certificate/PLACEHOLDER"
+acm_certificate_arn = "arn:aws:acm:us-east-1:783111403254:certificate/f29b5afd-a03d-4476-aa1f-7a8624fffb92"
 
 # Async
 lambda_runtime         = "nodejs20.x"

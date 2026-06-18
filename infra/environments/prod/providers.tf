@@ -20,7 +20,7 @@ terraform {
   # Backend remoto: el bucket y la tabla DynamoDB deben pre-existir
   # (bootstrapear una sola vez con `terraform init` en un entorno limpio)
   backend "s3" {
-    bucket         = "ticketgo-tfstate-prod"           # Cambiar por nombre real del bucket
+    bucket         = "http://ticketgo-tfstate-prod-1781628388.s3.amazonaws.com/" # Cambiar por nombre real del bucket
     key            = "prod/terraform.tfstate"
     region         = "us-east-2"
     encrypt        = true                              # AES-256 en reposo
