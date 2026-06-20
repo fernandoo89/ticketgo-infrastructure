@@ -29,11 +29,7 @@ resource "aws_db_parameter_group" "postgres" {
   name   = "${var.project_name}-${var.environment}-pg16-params"
   description = "Parametros optimizados para alta concurrencia en TicketGo"
 
-  # Incrementar conexiones máximas (default es bajo en instancias pequeñas)
-  parameter {
-    name  = "max_connections"
-    value = "500"
-  }
+
 
   # Logging de queries lentas (>500ms) para monitoreo de performance
   parameter {
@@ -63,7 +59,7 @@ resource "aws_db_instance" "primary" {
 
   # Motor
   engine               = "postgres"
-  engine_version       = "16.3"
+  engine_version       = "16"
   instance_class       = var.db_instance_class
   parameter_group_name = aws_db_parameter_group.postgres.name
 
@@ -84,7 +80,7 @@ resource "aws_db_instance" "primary" {
   publicly_accessible    = false  # Seguridad: NUNCA exponer RDS a Internet
 
   # Alta disponibilidad: Multi-AZ con réplica síncrona en otra AZ
-  multi_az = true
+  multi_az = false
 
   # Backups y PITR
   backup_retention_period   = 35   # Máximo PITR nativo de RDS (35 días)
@@ -92,8 +88,8 @@ resource "aws_db_instance" "primary" {
   maintenance_window        = "sun:04:00-sun:05:00"
 
   # Protección contra borrado accidental en producción
-  deletion_protection       = true
-  skip_final_snapshot       = false
+  deletion_protection       = false
+  skip_final_snapshot       = true
   final_snapshot_identifier = "${var.project_name}-${var.environment}-final-snapshot"
 
   # Performance Insights para monitoreo avanzado de queries

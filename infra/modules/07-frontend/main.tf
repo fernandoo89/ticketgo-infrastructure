@@ -13,7 +13,8 @@
 
 # ── S3 Bucket — Archivos Estáticos (React/Vue) ───────────────────────────────
 resource "aws_s3_bucket" "frontend" {
-  bucket = "${var.project_name}-${var.environment}-frontend-${data.aws_caller_identity.current.account_id}"
+  bucket        = "${var.project_name}-${var.environment}-frontend-${data.aws_caller_identity.current.account_id}"
+  force_destroy = true
 
   tags = { Name = "${var.project_name}-${var.environment}-frontend" }
 }
@@ -254,7 +255,6 @@ resource "aws_cloudfront_distribution" "frontend" {
 
     # Cache optimizado para archivos estáticos (1 día de TTL)
     cache_policy_id            = "658327ea-f89d-4fab-a63d-7e88639e58f6"  # CachingOptimized
-    origin_request_policy_id   = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcb"  # CORS-S3Origin
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
 
     # CloudFront Function para headers adicionales de seguridad
@@ -274,7 +274,6 @@ resource "aws_cloudfront_distribution" "frontend" {
     compress               = true
 
     # Cache agresivo: 1 año (los archivos tienen hash en el nombre)
-    cache_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"  # CachingDisabled no, usamos custom
     min_ttl         = 31536000
     default_ttl     = 31536000
     max_ttl         = 31536000

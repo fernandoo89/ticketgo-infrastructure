@@ -81,6 +81,16 @@ resource "aws_cloudwatch_log_group" "lambda" {
   tags = { Name = "${var.project_name}-${var.environment}-lambda-logs" }
 }
 
+data "archive_file" "placeholder" {
+  type        = "zip"
+  output_path = "${path.module}/placeholder.zip"
+
+  source {
+    content  = "exports.handler = async (event) => { console.log('Placeholder'); return { statusCode: 200 }; };"
+    filename = "index.js"
+  }
+}
+
 # ── Lambda Function — Worker de Tickets ───────────────────────────────────────
 resource "aws_lambda_function" "ticket_worker" {
   function_name = "${var.project_name}-${var.environment}-ticket-worker"
@@ -88,8 +98,8 @@ resource "aws_lambda_function" "ticket_worker" {
 
   # Código: el ZIP se sube desde el pipeline CI/CD (apps/worker-async/)
   # Para el primer despliegue, se usa un placeholder. El CI/CD lo actualiza.
-  filename         = "${path.module}/placeholder.zip"
-  source_code_hash = filebase64sha256("${path.module}/placeholder.zip")
+  filename         = data.archive_file.placeholder.output_path
+  source_code_hash = data.archive_file.placeholder.output_base64sha256
   handler          = "index.handler"
   runtime          = var.lambda_runtime
 
@@ -115,9 +125,7 @@ resource "aws_lambda_function" "ticket_worker" {
     }
   }
 
-  # Reserva de concurrencia: limita el impact en picos extremos (anti-thundering-herd)
-  # 50 invocaciones simultáneas es suficiente para procesar la cola sin sobrecargar RDS
-  reserved_concurrent_executions = 50
+
 
   # X-Ray tracing para observabilidad distribuida
   tracing_config {

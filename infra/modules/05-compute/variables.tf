@@ -47,4 +47,3 @@ variable "ecs_task_role_arn"           { type = string }
 variable "db_secret_arn"            { type = string }
 variable "redis_primary_endpoint"   { type = string }
 
-variable "acm_certificate_arn" { type = string }

@@ -153,14 +153,14 @@ resource "aws_ecs_task_definition" "api" {
 
 # ── Application Load Balancer ─────────────────────────────────────────────────
 resource "aws_lb" "main" {
-  name               = "${var.project_name}-${var.environment}-alb"
+  name               = "${var.project_name}-${var.environment}-alb-v2"
   internal           = false          # Público: accesible desde Internet
   load_balancer_type = "application"
   security_groups    = [var.sg_alb_id]
   subnets            = var.public_subnet_ids
 
   # Protección contra borrado accidental
-  enable_deletion_protection = true
+  enable_deletion_protection = false
 
   # Access logs para auditoría y diagnóstico
   access_logs {
@@ -174,7 +174,8 @@ resource "aws_lb" "main" {
 
 # Bucket S3 para logs del ALB
 resource "aws_s3_bucket" "alb_logs" {
-  bucket = "${var.project_name}-${var.environment}-alb-logs-${data.aws_caller_identity.current.account_id}"
+  bucket        = "${var.project_name}-${var.environment}-alb-logs-${data.aws_caller_identity.current.account_id}"
+  force_destroy = true
 
   tags = { Name = "${var.project_name}-${var.environment}-alb-logs" }
 }
@@ -261,33 +262,15 @@ resource "aws_lb_target_group" "api" {
   tags = { Name = "${var.project_name}-${var.environment}-tg-api" }
 }
 
-# Listener HTTPS (443) — producción
-resource "aws_lb_listener" "https" {
-  load_balancer_arn = aws_lb.main.arn
-  port              = 443
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"  # TLS 1.3 + TLS 1.2
-  certificate_arn   = var.acm_certificate_arn
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.api.arn
-  }
-}
-
-# Listener HTTP (80) — redirect permanente a HTTPS
-resource "aws_lb_listener" "http_redirect" {
+# Listener HTTP (80) — Tráfico directo para modo pruebas sin dominio
+resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.main.arn
   port              = 80
   protocol          = "HTTP"
 
   default_action {
-    type = "redirect"
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.api.arn
   }
 }
 
@@ -298,6 +281,8 @@ resource "aws_ecs_service" "api" {
   task_definition = aws_ecs_task_definition.api.arn
   desired_count   = var.ecs_desired_count
   launch_type     = "FARGATE"
+  
+  depends_on = [aws_lb_listener.http]
 
   # Permite actualizaciones del Task Definition sin downtime (rolling update)
   deployment_minimum_healthy_percent = 100
@@ -327,7 +312,7 @@ resource "aws_ecs_service" "api" {
   }
 
   # Spread entre AZs para alta disponibilidad
-  placement_strategy = []  # Fargate gestiona la distribución automáticamente
+
 
   lifecycle {
     ignore_changes = [desired_count]  # El auto scaling maneja el conteo en runtime

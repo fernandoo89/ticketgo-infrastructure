@@ -27,11 +27,6 @@ output "sg_lambda_id" {
   value       = aws_security_group.lambda.id
 }
 
-output "sg_vpc_endpoints_id" {
-  description = "ID del Security Group de VPC Interface Endpoints"
-  value       = aws_security_group.vpc_endpoints.id
-}
-
 output "ecs_task_execution_role_arn" {
   description = "ARN del IAM Role de ejecución de tareas ECS"
   value       = aws_iam_role.ecs_task_execution.arn

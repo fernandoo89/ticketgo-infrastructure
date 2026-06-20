@@ -151,7 +151,7 @@ resource "aws_route_table_association" "private_data" {
 
 # ── VPC Flow Logs (Seguridad: auditoría de tráfico de red) ───────────────────
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
-  name              = "/aws/vpc/flowlogs/${var.project_name}-${var.environment}"
+  name              = "/aws/vpc/flowlogs/${var.project_name}-${var.environment}-v3"
   retention_in_days = 90  # Retención 90 días para cumplimiento y forensics
 
   tags = { Name = "${var.project_name}-${var.environment}-vpc-flow-logs" }
@@ -198,6 +198,22 @@ resource "aws_flow_log" "main" {
 
   tags = { Name = "${var.project_name}-${var.environment}-flow-log" }
 }
+# ── Security Group: VPC Endpoints ─────────────────────────────────────────────
+resource "aws_security_group" "vpc_endpoints" {
+  name        = "${var.project_name}-${var.environment}-sg-vpce"
+  description = "Trafico HTTPS desde VPC hacia Interface Endpoints"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "HTTPS desde recursos dentro del VPC"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+  }
+
+  tags = { Name = "${var.project_name}-${var.environment}-sg-vpce" }
+}
 
 # ── VPC Endpoints (reduce latencia y costos de datos) ────────────────────────
 # Decisión: S3 Gateway endpoint → los contenedores acceden a S3 sin pasar
@@ -221,7 +237,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
   service_name        = "com.amazonaws.${var.aws_region}.ecr.api"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = aws_subnet.private_app[*].id
-  security_group_ids  = [var.vpc_endpoint_sg_id]
+  security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
 
   tags = { Name = "${var.project_name}-${var.environment}-vpce-ecr-api" }
@@ -232,7 +248,7 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   service_name        = "com.amazonaws.${var.aws_region}.ecr.dkr"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = aws_subnet.private_app[*].id
-  security_group_ids  = [var.vpc_endpoint_sg_id]
+  security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
 
   tags = { Name = "${var.project_name}-${var.environment}-vpce-ecr-dkr" }
@@ -243,7 +259,7 @@ resource "aws_vpc_endpoint" "secretsmanager" {
   service_name        = "com.amazonaws.${var.aws_region}.secretsmanager"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = aws_subnet.private_app[*].id
-  security_group_ids  = [var.vpc_endpoint_sg_id]
+  security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
 
   tags = { Name = "${var.project_name}-${var.environment}-vpce-secretsmanager" }
@@ -254,7 +270,7 @@ resource "aws_vpc_endpoint" "cloudwatch_logs" {
   service_name        = "com.amazonaws.${var.aws_region}.logs"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = aws_subnet.private_app[*].id
-  security_group_ids  = [var.vpc_endpoint_sg_id]
+  security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
 
   tags = { Name = "${var.project_name}-${var.environment}-vpce-logs" }

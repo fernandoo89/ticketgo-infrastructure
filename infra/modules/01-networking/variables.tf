@@ -41,8 +41,3 @@ variable "private_data_subnet_cidrs" {
   description = "CIDRs para subredes privadas de datos (RDS, Redis)"
   type        = list(string)
 }
-
-variable "vpc_endpoint_sg_id" {
-  description = "ID del Security Group para los VPC Interface Endpoints"
-  type        = string
-}

@@ -122,22 +122,6 @@ resource "aws_security_group" "lambda" {
   tags = { Name = "${var.project_name}-${var.environment}-sg-lambda" }
 }
 
-# ── Security Group: VPC Endpoints ─────────────────────────────────────────────
-resource "aws_security_group" "vpc_endpoints" {
-  name        = "${var.project_name}-${var.environment}-sg-vpce"
-  description = "Trafico HTTPS desde VPC hacia Interface Endpoints"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    description = "HTTPS desde recursos dentro del VPC"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
-  }
-
-  tags = { Name = "${var.project_name}-${var.environment}-sg-vpce" }
-}
 
 ###############################################################################
 # IAM — Roles de Ejecución
@@ -332,7 +316,7 @@ resource "random_password" "db_password" {
 # Los contenedores ECS inyectan este secreto como variables de entorno en el
 # Task Definition, evitando que aparezcan en logs o código fuente.
 resource "aws_secretsmanager_secret" "db_credentials" {
-  name                    = "${var.project_name}/${var.environment}/db-credentials"
+  name                    = "${var.project_name}/${var.environment}/db-credentials-v2"
   description             = "Credenciales de la base de datos RDS PostgreSQL"
   recovery_window_in_days = 30  # Protección contra borrado accidental
 
@@ -358,7 +342,7 @@ resource "aws_secretsmanager_secret_version" "db_credentials" {
 
 # Secret para la URL de conexión Redis
 resource "aws_secretsmanager_secret" "redis_url" {
-  name                    = "${var.project_name}/${var.environment}/redis-url"
+  name                    = "${var.project_name}/${var.environment}/redis-url-v2"
   description             = "URL de conexion a ElastiCache Redis"
   recovery_window_in_days = 30
 

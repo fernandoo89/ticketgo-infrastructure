@@ -50,9 +50,6 @@ module "networking" {
   private_app_subnet_cidrs  = var.private_app_subnet_cidrs
   private_data_subnet_cidrs = var.private_data_subnet_cidrs
 
-  # El SG de VPC Endpoints lo crea el módulo de seguridad (orden: security después)
-  # Se usa depends_on para garantizar orden correcto
-  vpc_endpoint_sg_id = module.security.sg_vpc_endpoints_id
 }
 
 ###############################################################################
@@ -156,7 +153,6 @@ module "compute" {
   db_secret_arn            = module.security.db_secret_arn
   redis_primary_endpoint   = module.cache.redis_primary_endpoint
 
-  acm_certificate_arn = var.acm_certificate_arn
 
   depends_on = [module.database, module.cache]
 }
@@ -191,7 +187,6 @@ module "frontend" {
   source = "../../modules/07-frontend"
 
   providers = {
-    aws           = aws
     aws.us_east_1 = aws.us_east_1
   }
 

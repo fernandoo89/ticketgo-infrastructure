@@ -58,10 +58,10 @@ resource "aws_elasticache_replication_group" "main" {
 
   # HA: num_cache_clusters = 1 primario + (num_cache_nodes - 1) réplicas
   num_cache_clusters         = var.redis_num_cache_nodes
-  automatic_failover_enabled = true  # Promueve réplica si el primario falla
+  automatic_failover_enabled = var.redis_num_cache_nodes > 1  # Promueve réplica si el primario falla
 
   # Multi-AZ automático cuando automatic_failover_enabled = true
-  multi_az_enabled = true
+  multi_az_enabled = var.redis_num_cache_nodes > 1
 
   # Red y seguridad
   subnet_group_name  = aws_elasticache_subnet_group.main.name

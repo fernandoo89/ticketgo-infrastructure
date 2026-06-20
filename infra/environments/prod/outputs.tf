@@ -92,7 +92,7 @@ output "deployment_summary" {
   description = "Resumen de endpoints clave del despliegue"
   value = {
     frontend_url     = "https://${module.frontend.cloudfront_domain_name}"
-    api_url          = "https://${module.compute.alb_dns_name}"
+    api_url          = "http://${module.compute.alb_dns_name}"
     ecr_repository   = module.compute.ecr_repository_url
     ecs_cluster      = module.compute.ecs_cluster_name
     s3_frontend      = module.frontend.s3_bucket_name
