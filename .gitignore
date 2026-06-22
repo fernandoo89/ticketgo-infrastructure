@@ -1,11 +1,12 @@
 # TicketGo Terraform Infrastructure
 # Archivos sensibles y generados por Terraform — NUNCA commitear
+*.tfvars
 *.tfvars.local
 *.tfvars.secrets
 .terraform/
 .terraform.lock.hcl
-terraform.tfstate
-terraform.tfstate.backup
+*.tfstate
+*.tfstate.*
 *.tfplan
 tfplan
 plan_output.txt
