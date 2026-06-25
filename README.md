@@ -1,45 +1,10 @@
-# 🎟️ TicketGo - Infraestructura & Aplicaciones en AWS
+<img width="1600" height="1189" alt="image" src="https://github.com/user-attachments/assets/a3fd08d3-e503-451e-b11d-57170c8a3e73" /># 🎟️ TicketGo - Infraestructura & Aplicaciones en AWS
 
 ¡Bienvenido al repositorio principal de **TicketGo**! Este proyecto contiene la definición completa de la infraestructura en la nube utilizando **Terraform**, así como las aplicaciones que componen la plataforma de venta de tickets. La arquitectura está diseñada siguiendo las mejores prácticas de AWS para lograr alta disponibilidad, escalabilidad automatizada, seguridad robusta y despliegue continuo (CI/CD).
 
 ---
 
-## 🏗️ Resumen de la Arquitectura
 
-La plataforma está estructurada en tres capas principales:
-
-```mermaid
-graph TD
-    Client[Cliente / Navegador] -->|HTTPS| CF[CloudFront CDN]
-    CF -->|WAF Shield| S3Web[Bucket S3: Frontend Estático]
-    Client -->|API Requests| ALB[Application Load Balancer]
-    ALB -->|Balanceo de Carga| ECS[ECS Fargate: API Backend]
-    
-    subgraph VPC [AWS VPC - Región Ohio us-east-2]
-        subgraph PublicSubnets [Subnets Públicas]
-            ALB
-        end
-        
-        subgraph PrivateAppSubnets [Subnets Privadas de Aplicación]
-            ECS
-            Lambda[Lambda Async Worker]
-        end
-        
-        subgraph PrivateDataSubnets [Subnets Privadas de Datos]
-            RDS[(RDS PostgreSQL Multi-AZ)]
-            Redis[(ElastiCache Redis)]
-        end
-        
-        SQS[SQS Queue]
-    end
-
-    ECS -->|Encolar Transacción| SQS
-    SQS -->|Desencadenar Lote| Lambda
-    Lambda -->|Actualizar Estado / Procesar Pago| RDS
-    ECS -->|Consultar / Guardar Caché| Redis
-    ECS -->|Consultar Credenciales| SM[Secrets Manager]
-    Lambda -->|Consultar Credenciales| SM
-```
 
 ### Componentes Clave:
 1. **Frontend**: Aplicación en React servida mediante un bucket de Amazon S3 y distribuida globalmente por Amazon CloudFront, protegida por AWS WAF.
