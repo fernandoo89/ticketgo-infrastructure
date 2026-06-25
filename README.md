@@ -1,8 +1,11 @@
-<img width="1600" height="1189" alt="image" src="https://github.com/user-attachments/assets/a3fd08d3-e503-451e-b11d-57170c8a3e73" /># 🎟️ TicketGo - Infraestructura & Aplicaciones en AWS
+🎟️ TicketGo - Infraestructura & Aplicaciones en AWS
 
 ¡Bienvenido al repositorio principal de **TicketGo**! Este proyecto contiene la definición completa de la infraestructura en la nube utilizando **Terraform**, así como las aplicaciones que componen la plataforma de venta de tickets. La arquitectura está diseñada siguiendo las mejores prácticas de AWS para lograr alta disponibilidad, escalabilidad automatizada, seguridad robusta y despliegue continuo (CI/CD).
 
----
+### DIAGRAMA DEL PROYECTO
+
+<img width="1600" height="1189" alt="image" src="https://github.com/user-attachments/assets/a3fd08d3-e503-451e-b11d-57170c8a3e73" />#
+
 
 
 
